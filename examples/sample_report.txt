@@ -1,0 +1,30 @@
+FICTIONAL THREAT REPORT - FOR TESTING ONLY
+==========================================
+
+Summary
+-------
+Operators behind the "PaperKite" campaign (fictional) sent phishing e-mails from
+billing[@]invoice-update[.]example to finance staff. The lure linked to
+hxxps://cdn-docs[.]example-cdn[.]net/view?id=8841 which delivered invoice.pdf.exe.
+
+Infrastructure
+--------------
+- C2 servers: 203.0.113.45 and 198.51.100[.]77 (TCP/443)
+- Fallback domain: update-check(.)badsite(.)org
+- Internal pivot observed from 10.20.30.40 (victim host, not malicious)
+- IPv6 beacon: 2001:db8:85a3::8a2e:370:7334
+
+Payload hashes
+--------------
+MD5:    44d88612fea8a8f36de82e1278abb02f
+SHA1:   3395856ce81f2b7382dee72602f798b642f14140
+SHA256: 275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f
+
+Vulnerabilities and TTPs
+------------------------
+Initial access exploited CVE-2023-4966 and cve-2024-3400. Execution used
+PowerShell (T1059.001) and persistence via scheduled tasks (T1053.005).
+Legitimate services abused: https://www.google.com/search?q=test and docs.microsoft.com.
+
+Note: config.json, loader.dll and readme.txt are file names, not domains.
+Build 1.2.3.4.5 is a version number, not an IP.
