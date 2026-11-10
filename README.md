@@ -5,36 +5,33 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen)
 
-Extract **Indicators of Compromise (IOCs)** from threat-intelligence reports, e-mails and logs —
-with refanging, false-positive filtering, allowlists and analyst-friendly output.
+Extrai **Indicadores de Comprometimento (IOCs)** de relatórios de inteligência de ameaças, e-mails e logs — com refang, filtro de falsos positivos, allowlists e saída pensada para o analista.
 
-Pure Python standard library. No dependencies, no network calls.
+Python puro, só com a biblioteca padrão. Sem dependências, sem chamadas de rede.
 
-## Why
+## Por que
 
-Threat reports publish indicators *defanged* (`hxxps://evil[.]com`) and mixed with prose,
-file names and version numbers. Copying them by hand into a SIEM, blocklist or MISP event is slow
-and error-prone. `ioc-extractor` turns a report into a clean, deduplicated list in one command.
+Relatórios de ameaça publicam indicadores *defanged* (`hxxps://evil[.]com`) misturados com texto, nomes de arquivo e números de versão. Copiar isso à mão para um SIEM, uma blocklist ou um evento no MISP é lento e sujeito a erro. O `ioc-extractor` transforma um relatório numa lista limpa e sem duplicatas, num único comando.
 
-## Features
+## Funcionalidades
 
-| Type | Example | Notes |
+| Tipo | Exemplo | Observações |
 |---|---|---|
-| `url` | `https://cdn.example.net/view?id=1` | trailing punctuation and stray `)` removed |
-| `domain` | `update-check.badsite.org` | file names like `loader.dll`, `config.json` filtered out |
-| `ipv4` / `ipv6` | `203.0.113.45`, `2001:db8::1` | validated with `ipaddress`; version strings like `1.2.3.4.5` ignored |
-| `email` | `billing@invoice-update.example` | its domain is not duplicated as a `domain` |
-| `md5` / `sha1` / `sha256` | `44d886…` | normalised to lowercase |
-| `cve` | `CVE-2024-3400` | normalised to uppercase |
-| `mitre_attack` | `T1059.001` | ATT&CK technique and sub-technique IDs |
+| `url` | `https://cdn.example.net/view?id=1` | pontuação final e `)` soltos são removidos |
+| `domain` | `update-check.badsite.org` | nomes de arquivo como `loader.dll`, `config.json` são filtrados |
+| `ipv4` / `ipv6` | `203.0.113.45`, `2001:db8::1` | validados com `ipaddress`; strings de versão como `1.2.3.4.5` são ignoradas |
+| `email` | `billing@invoice-update.example` | o domínio não é repetido como `domain` |
+| `md5` / `sha1` / `sha256` | `44d886…` | normalizados para minúsculas |
+| `cve` | `CVE-2024-3400` | normalizado para maiúsculas |
+| `mitre_attack` | `T1059.001` | IDs de técnica e subtécnica do ATT&CK |
 
-- **Refang** input: `hxxp`, `[.]`, `(.)`, `{.}`, `[dot]`, `[@]`, `(at)`, `[://]`, `fxp`
-- **Defang** output for safe sharing (Markdown reports are defanged by default)
-- `--exclude-private`: drops private, loopback, link-local and documentation ranges
-- `--allowlist`: ignore known-good values; a parent domain covers subdomains, URLs and e-mails
-- Output as **JSON**, **CSV** or **Markdown**; reads files or `stdin`
+- **Refang** da entrada: `hxxp`, `[.]`, `(.)`, `{.}`, `[dot]`, `[@]`, `(at)`, `[://]`, `fxp`
+- **Defang** da saída para compartilhar com segurança (relatórios em Markdown saem defanged por padrão)
+- `--exclude-private`: descarta IPs privados, de loopback, link-local e faixas de documentação
+- `--allowlist`: ignora valores conhecidos como legítimos; um domínio-pai cobre subdomínios, URLs e e-mails
+- Saída em **JSON**, **CSV** ou **Markdown**; lê arquivos ou `stdin`
 
-## Install
+## Instalação
 
 ```bash
 git clone https://github.com/carlpit/ioc-extractor.git
@@ -42,7 +39,7 @@ cd ioc-extractor
 pip install -e ".[dev]"
 ```
 
-## Usage
+## Uso
 
 ```bash
 # JSON to stdout
@@ -58,7 +55,7 @@ ioc-extractor report.txt -f md --allowlist examples/allowlist.txt -o iocs.md
 curl -s https://example.org/advisory.txt | ioc-extractor -f csv
 ```
 
-Example (excerpt) for [`examples/sample_report.txt`](examples/sample_report.txt):
+Exemplo (trecho) de [`examples/sample_report.txt`](examples/sample_report.txt):
 
 ```json
 {
@@ -73,7 +70,7 @@ Example (excerpt) for [`examples/sample_report.txt`](examples/sample_report.txt)
 }
 ```
 
-### As a library
+### Como biblioteca
 
 ```python
 from ioc_extractor import extract, defang
@@ -83,16 +80,13 @@ for ioc_type, value in result.rows():
     print(ioc_type, defang(value, ioc_type))
 ```
 
-## Design notes
+## Notas de projeto
 
-- **Precision over recall.** A blocklist with false positives breaks production (blocking
-  `config.json` as a domain is a classic). Domain candidates whose TLD is a common file
-  extension are dropped; IPs must be valid addresses; e-mail domains are not double-counted.
-- **Order of extraction** is irrelevant to the result because each type is matched independently
-  and stored in sets, so results are deterministic and sorted.
-- The sample report is **fictional** and uses documentation IP ranges (RFC 5737 / RFC 3849).
+- **Precisão acima de recall.** Uma blocklist com falsos positivos quebra a produção (bloquear `config.json` como domínio é um clássico). Candidatos a domínio cujo TLD é uma extensão de arquivo comum são descartados; IPs precisam ser endereços válidos; domínios de e-mail não são contados duas vezes.
+- **A ordem da extração** não altera o resultado, porque cada tipo é buscado de forma independente e guardado em conjuntos: a saída é determinística e ordenada.
+- O relatório de exemplo é **ficcional** e usa faixas de IP de documentação (RFC 5737 / RFC 3849).
 
-## Tests
+## Testes
 
 ```bash
 pytest            # unit, CLI and doctests
@@ -101,12 +95,12 @@ ruff check .
 
 ## Roadmap
 
-- [ ] STIX 2.1 bundle export
-- [ ] MISP event JSON export
-- [ ] PDF / HTML input
-- [ ] Optional enrichment (VirusTotal, AbuseIPDB) behind API keys
+- [ ] Exportação em bundle STIX 2.1
+- [ ] Exportação de evento MISP em JSON
+- [ ] Entrada PDF / HTML
+- [ ] Enriquecimento opcional (VirusTotal, AbuseIPDB) atrás de chaves de API
 
-## License
+## Licença
 
 MIT
 
