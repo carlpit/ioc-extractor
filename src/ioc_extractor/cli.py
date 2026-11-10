@@ -35,7 +35,15 @@ def build_parser() -> argparse.ArgumentParser:
                    help="drop private, loopback and reserved IPs")
     p.add_argument("--allowlist", type=Path, help="file with values/domains to ignore")
     p.add_argument("--no-refang", action="store_true", help="do not refang input first")
-    p.add_argument("-V", "--version", action="version", version=f"%(prog)s {__version__}")
+    p.add_argument(
+        "-V",
+        "--version",
+        action="version",
+        version=(
+            f"%(prog)s {__version__} — desenvolvido por carlpit "
+            f"(https://github.com/carlpit)"
+        ),
+    )
     return p
 
 

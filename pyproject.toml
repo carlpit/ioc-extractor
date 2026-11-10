@@ -25,6 +25,10 @@ dev = ["pytest>=7", "pytest-cov", "ruff"]
 [project.scripts]
 ioc-extractor = "ioc_extractor.cli:main"
 
+[project.urls]
+Homepage = "https://github.com/carlpit/ioc-extractor"
+Issues = "https://github.com/carlpit/ioc-extractor/issues"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 

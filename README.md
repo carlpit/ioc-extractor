@@ -109,3 +109,7 @@ ruff check .
 ## License
 
 MIT
+
+---
+
+**Desenvolvido por [carlpit](https://github.com/carlpit)** · Developed by carlpit
