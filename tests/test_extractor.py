@@ -109,3 +109,25 @@ def test_deduplication():
     result = extract("evil.com EVIL.com evil.com")
     assert result.to_dict()["domain"] == ["evil.com"]
     assert len(result) == 1
+
+def test_url_keeps_balanced_parentheses_and_brackets():
+    text = "See http://evil.com/func(1) and http://evil.com/arr[0] please."
+    assert extract(text).to_dict()["url"] == [
+        "http://evil.com/arr[0]",
+        "http://evil.com/func(1)",
+    ]
+
+
+def test_url_strips_unmatched_closers_from_prose():
+    text = "See (http://evil.com/a) and [http://evil.com/b]."
+    assert extract(text).to_dict()["url"] == ["http://evil.com/a", "http://evil.com/b"]
+
+
+def test_cve_accepts_ids_longer_than_seven_digits():
+    assert extract("see CVE-2026-12345678").to_dict()["cve"] == ["CVE-2026-12345678"]
+
+
+def test_mitre_attack_includes_ics_techniques():
+    result = extract("ICS T0801 and enterprise T1059.001").to_dict()
+    assert result["mitre_attack"] == ["T0801", "T1059.001"]
+

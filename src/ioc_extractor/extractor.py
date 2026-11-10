@@ -51,11 +51,14 @@ _RE = {
     "sha256": re.compile(r"\b[A-Fa-f0-9]{64}\b"),
     "sha1": re.compile(r"\b[A-Fa-f0-9]{40}\b"),
     "md5": re.compile(r"\b[A-Fa-f0-9]{32}\b"),
-    "cve": re.compile(r"\bCVE-\d{4}-\d{4,7}\b", re.IGNORECASE),
-    "mitre_attack": re.compile(r"\bT1\d{3}(?:\.\d{3})?\b"),
+    "cve": re.compile(r"\bCVE-\d{4}-\d{4,}\b", re.IGNORECASE),
+    "mitre_attack": re.compile(r"\bT\d{4}(?:\.\d{3})?\b"),
 }
 
-_TRAILING_PUNCT = ".,;:!?)]}'\""
+# Strip sentence punctuation, but keep ')' and ']' so paths like /func(1)
+# or /arr[0] are not truncated. Unmatched closers from prose are handled in
+# _clean_url.
+_TRAILING_PUNCT = ".,;:!?'\""
 
 
 @dataclass
@@ -86,9 +89,17 @@ class ExtractionResult:
 
 def _clean_url(url: str) -> str:
     url = url.rstrip(_TRAILING_PUNCT)
-    # Remove an unmatched closing parenthesis left from "(see http://x.com)".
-    while url.endswith(")") and url.count("(") < url.count(")"):
-        url = url[:-1]
+    # Remove unmatched closers left from prose such as "(see http://x.com)"
+    # or "[see http://x.com]".
+    changed = True
+    while changed:
+        changed = False
+        if url.endswith(")") and url.count("(") < url.count(")"):
+            url = url[:-1].rstrip(_TRAILING_PUNCT)
+            changed = True
+        if url.endswith("]") and url.count("[") < url.count("]"):
+            url = url[:-1].rstrip(_TRAILING_PUNCT)
+            changed = True
     return url
 
 
